@@ -256,7 +256,7 @@ It does not replace bank CBS systems and is **not an RBI-regulated product**.
 # Contribution Guide
 - Fork repository
 - Create branch: `feature/xxx` or `bugfix/yyy`
-- Follow code style (Java: Android style guide)
+- Follow code style
 - Create PR with description and linked issue
 - CI must pass before merge
 
