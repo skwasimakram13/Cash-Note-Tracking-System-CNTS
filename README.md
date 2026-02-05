@@ -1,66 +1,62 @@
 # Cash Note Tracking System (CNTS)
-> A Computer Vision–powered cash inflow & outflow control system for CSP / cash-intensive businesses
+
+> A computer vision–powered cash inflow and outflow control system for CSP and other cash-intensive businesses.
 
 ---
 
 ## 🧠 Problem Statement
 
-Cash-based CSP operations suffer from:
-- Manual reconciliation errors
-- Employee-led note substitution or hiding
-- Zero traceability at the **individual banknote level**
-- End-of-day mismatches with no forensic proof
+Cash-based CSP operations commonly suffer from:
 
-Traditional accounting tracks **amounts**.  
-Fraud happens at the **note level**.
+- Manual reconciliation errors  
+- Employee-led note substitution or concealment  
+- Zero traceability at the **individual banknote level**  
+- End-of-day mismatches with no forensic evidence  
 
-**CNTS solves this by digitizing every physical banknote.**
+Traditional accounting systems track **amounts**.  
+Fraud, however, happens at the **note level**.
+
+**CNTS addresses this gap by digitizing every physical banknote.**
 
 ---
 
 ## 🎯 Objective
 
-To build a desktop-based software that:
-- Detects Indian currency denomination (₹50 / ₹100 / ₹200 / ₹500)
-- Reads and stores **unique serial numbers** using camera + OCR
-- Tracks **IN / OUT** movement of every note
-- Maintains real-time drawer balance
-- Prevents, detects, and audits cash theft
+To build a desktop-based software system that:
+
+- Detects Indian currency denominations (₹50 / ₹100 / ₹200 / ₹500)
+- Reads and stores **unique banknote serial numbers** using a camera and OCR
+- Tracks **IN / OUT** movement of each individual note
+- Maintains a real-time cash drawer balance
+- Prevents, detects, and audits internal cash theft
 
 ---
 
 ## 🏗️ System Architecture (High Level)
 
-USB Camera
-↓
-Image Capture
-↓
-Note Detection (Denomination)
-↓
-Serial Number OCR
-↓
-Validation Layer
-↓
-Ledger Database
-↓
-Dashboard & Reports
+- USB Camera  
+- Image Capture  
+- Note Detection (Denomination)  
+- Serial Number OCR  
+- Validation Layer  
+- Ledger Database  
+- Dashboard & Reports  
 
-
-This is a **Cash Digital Twin** architecture.
+This architecture creates a **Cash Digital Twin** of the physical drawer.
 
 ---
 
 ## 🖥️ Hardware Requirements
 
-| Component | Minimum Spec |
-|---------|--------------|
-| Desktop OS | Windows 10 / 11 |
-| Camera | USB HD Camera (1080p, fixed focus) |
-| Mount | Fixed overhead mount (non-movable) |
-| Lighting | White LED (diffused, shadow-free) |
-| Desk Surface | Matte black base |
+| Component      | Minimum Specification                     |
+|---------------|--------------------------------------------|
+| Desktop OS    | Windows 10 / Windows 11                    |
+| Camera        | USB HD Camera (1080p, fixed focus)         |
+| Mount         | Fixed overhead mount (non-movable)         |
+| Lighting      | White LED lighting (diffused, shadow-free) |
+| Desk Surface  | Matte black base                           |
 
-⚠️ **Camera angle and lighting must NEVER change**
+⚠️ **Camera angle and lighting conditions must never change.**
 
 ---
 
@@ -68,17 +64,17 @@ This is a **Cash Digital Twin** architecture.
 
 ### Core
 - **Python 3.10+**
-- **OpenCV** – image processing
-- **YOLOv8** – note denomination detection
+- **OpenCV** – image preprocessing and enhancement
+- **YOLOv8** – currency note denomination detection
 - **Tesseract OCR** – serial number extraction
 
 ### Backend
-- **SQLite / PostgreSQL**
+- **SQLite** (local) or **PostgreSQL** (scalable)
 - **SQLAlchemy ORM**
 
 ### Frontend (Desktop)
-- **PyQt / Tkinter**
-- Offline-first design
+- **PyQt** or **Tkinter**
+- Offline-first design (no internet dependency)
 
 ---
 
@@ -86,23 +82,23 @@ This is a **Cash Digital Twin** architecture.
 
 ### ✔ Denomination Detection
 - Identifies ₹50 / ₹100 / ₹200 / ₹500 notes
-- Confidence-based validation
+- Confidence-score–based validation
 
 ### ✔ Serial Number OCR
-- Crops serial number region
+- Serial-region cropping
 - Image enhancement before OCR
-- Regex-based validation
-- Confidence threshold enforcement
+- Regex-based serial validation
+- OCR confidence threshold enforcement
 
 ### ✔ Cash In / Cash Out Workflow
-- Mandatory scan for every note
+- Mandatory scanning for every note
 - No manual amount entry
-- Real-time calculation
+- Automatic total calculation
 
 ### ✔ Anti-Theft Controls
-- Duplicate serial detection
+- Duplicate serial number detection
 - Withdraw-only-existing-notes rule
-- Scan refusal on mismatch
+- Scan refusal on mismatches
 
 ### ✔ Audit & Reporting
 - End-of-day reconciliation
@@ -113,112 +109,120 @@ This is a **Cash Digital Twin** architecture.
 
 ## 🔄 Operational Flow
 
-### CASH IN (Deposit / Received Cash)
+### CASH IN (Deposit / Cash Received)
 
 1. Operator selects **Cash In**
-2. Places notes one by one under camera
+2. Notes are placed one by one under the camera
 3. System detects:
-   - Denomination
-   - Serial Number
-4. Note stored as `IN`
-5. Drawer balance updated automatically
+   - Denomination  
+   - Serial number  
+4. Each note is stored with status `IN`
+5. Drawer balance updates automatically
+
+---
 
 ### CASH OUT (Withdrawal)
 
 1. Operator selects **Cash Out**
-2. Required amount displayed
-3. Notes must be scanned
+2. Required withdrawal amount is displayed
+3. Notes must be scanned individually
 4. System verifies note availability
-5. Notes marked as `OUT`
+5. Notes are marked with status `OUT`
 
-🚫 No scan → No transaction
+🚫 **No scan → No transaction**
 
 ---
 
 ## 🗃️ Database Schema
 
 ### `notes`
-| Column | Type | Description |
-|------|------|------------|
-| serial_number | TEXT (PK) | Unique note ID |
-| denomination | INTEGER | 50 / 100 / 200 / 500 |
-| status | TEXT | IN / OUT |
-| last_seen | TIMESTAMP | Last scan time |
+
+| Column         | Type        | Description              |
+|---------------|-------------|--------------------------|
+| serial_number | TEXT (PK)   | Unique banknote ID       |
+| denomination  | INTEGER     | 50 / 100 / 200 / 500     |
+| status        | TEXT        | IN / OUT                 |
+| last_seen     | TIMESTAMP   | Last scan timestamp      |
+
+---
 
 ### `transactions`
-| Column | Type |
-|------|------|
-| id | INTEGER (PK) |
-| type | IN / OUT |
-| total_amount | INTEGER |
-| operator_id | INTEGER |
-| timestamp | TIMESTAMP |
+
+| Column        | Type        |
+|--------------|-------------|
+| id           | INTEGER (PK)|
+| type         | TEXT (IN/OUT)|
+| total_amount | INTEGER     |
+| operator_id  | INTEGER     |
+| timestamp    | TIMESTAMP   |
+
+---
 
 ### `operators`
-| Column | Type |
-|------|------|
-| id | INTEGER |
-| name | TEXT |
-| login_id | TEXT |
+
+| Column    | Type    |
+|----------|---------|
+| id       | INTEGER |
+| name     | TEXT    |
+| login_id | TEXT    |
 
 ---
 
 ## 🛡️ Validation Rules
 
-- A serial number **cannot exist twice** as `IN`
-- A note must be `IN` before it can be `OUT`
-- OCR confidence < 90% → force rescan
-- Manual override requires admin login + reason
+- A serial number **cannot exist twice** with status `IN`
+- A note must be `IN` before it can be marked `OUT`
+- OCR confidence below 90% triggers a forced rescan
+- Manual overrides require admin login and justification
 
 ---
 
 ## 📊 Dashboard Metrics
 
 - Live drawer balance
-- Notes by denomination
-- Today’s IN vs OUT
-- Missing note detection
-- Operator activity heatmap
+- Denomination-wise note count
+- Today’s total IN vs OUT
+- Missing note alerts
+- Operator activity summary
 
 ---
 
 ## ⚠️ Known Challenges & Mitigations
 
 ### OCR Accuracy
-**Mitigation**
-- Fixed lighting
-- Serial-region cropping
-- Confidence threshold
-- Forced rescans
+**Mitigations**
+- Fixed lighting and camera angle
+- Precise serial-region cropping
+- Confidence-based rescanning
 
-### Speed of Operation
-**Mitigation**
-- Bundle scan mode (future)
-- High-risk note focus (₹500 priority)
+### Operational Speed
+**Mitigations**
+- Planned bundle scan mode
+- High-risk denomination prioritization (₹500 notes)
 
-### Legal / Compliance
-- System is **internal accounting**
-- No bank CBS integration
-- No RBI policy violation
+### Legal & Compliance
+- System is for **internal accounting only**
+- No integration with bank CBS systems
+- No RBI regulatory dependency
 
 ---
 
-## 🧠 Smart Deployment Strategy
+## 🧠 Deployment Strategy
 
-### Phase 1 (MVP)
-- ₹500 notes only
+### Phase 1 – MVP
+- ₹500 denomination only
 - Single operator
-- Offline mode
+- Fully offline mode
 
 ### Phase 2
-- Multi-denomination
-- Operator login
-- Advanced reports
+- Multi-denomination support
+- Operator authentication
+- Advanced reporting
 
 ### Phase 3
 - Multi-branch support
 - Central audit server
-- AI anomaly detection
+- AI-based anomaly detection
 
 ---
 
@@ -226,32 +230,62 @@ This is a **Cash Digital Twin** architecture.
 
 > “Trust people less. Trust systems more.”
 
-- Every note is accountable
-- Every action is logged
-- Every mismatch is explainable
+- Every note is accountable  
+- Every action is logged  
+- Every discrepancy is explainable  
 
 ---
 
 ## 🚀 Future Enhancements
 
-- Bundle scanning (5 notes at once)
-- Fingerprint / Face login
-- CCTV snapshot per transaction
-- SMS alert on mismatch
-- Cloud sync (optional)
+- Bundle scanning (multiple notes per scan)
+- Fingerprint or face authentication
+- CCTV snapshot capture per transaction
+- SMS alerts for mismatches
+- Optional cloud synchronization
 
 ---
 
 ## 📜 Disclaimer
 
-This software is intended for **internal cash management only**.  
-It does not replace bank CBS systems and is not an RBI-regulated product.
+This software is intended strictly for **internal cash management**.  
+It does not replace bank CBS systems and is **not an RBI-regulated product**.
 
 ---
 
-## 👤 Author
+# Contribution Guide
+- Fork repository
+- Create branch: `feature/xxx` or `bugfix/yyy`
+- Follow code style (Java: Android style guide)
+- Create PR with description and linked issue
+- CI must pass before merge
 
-**CNTS – Cash Note Tracking System**  
-Designed for CSPs who want **control, clarity, and consequences**.
+
+# License & Contact
+- MIT License — you may use and modify the code for your organization. Include attribution if you redistribute.
+- For commercial / closed-source product consider proprietary license.
+
+**Contact**: Project owner / maintainer - wasim@demoody.com
 
 ---
+## Author
+**Develope By** - [Sk Wasim Akram](https://github.com/skwasimakram13)
+
+- 👨‍💻 All of my projects are available at [https://skwasimakram.com](https://skwasimakram.com)
+
+- 📝 I regularly write articles on [https://blog.skwasimakram.com](https://blog.skwasimakram.com)
+
+- 📫 How to reach me **hello@skwasimakram.com**
+
+- 🧑‍💻 Google Developer Profile [https://g.dev/skwasimakram](https://g.dev/skwasimakram)
+
+- 📲 LinkedIn [https://www.linkedin.com/in/sk-wasim-akram](https://www.linkedin.com/in/sk-wasim-akram)
+
+---
+
+💡 *Built with ❤️ and creativity by Wassu.*
+
+---
+
+*This README is a product-level blueprint. It contains technical and legal notes and external policies evolve.*
+
