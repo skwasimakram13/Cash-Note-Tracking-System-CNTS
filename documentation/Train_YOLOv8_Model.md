@@ -1,11 +1,17 @@
-How to Train a YOLOv8 Model for CNTS
-Since we need to detect Indian Currency (specifically ₹500 notes), and we don't have a pre-trained model, you will need to create one. This is known as "Training a Custom Object Detector".
+# How to Train a YOLOv8 Model for CNTS
+> Since we need to detect Indian Currency (specifically ₹500 notes), and we don't have a pre-trained model, you will need to create one. This is known as "Training a Custom Object Detector".
 
-Phase 1: Data Collection
+---
+
+## Phase 1: Data Collection
 We need 50-100 images of the note in different angles, lighting, and backgrounds to get a decent result.
 
 Run the Helper Tool: I have created a script to help you take photos using your webcam.
+
+ bh 
 python tools/collect_data.py
+
+'''
 Capture Images:
 Hold a ₹500 note in front of the camera.
 Press [Spacebar] to save an image.
